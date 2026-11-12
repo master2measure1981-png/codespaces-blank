@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#102a43">
+    <meta name="description" content="Offline thermal compensation and uncertainty calculator for dimensional metrology.">
+    <title>DataTech Thermal Compensation</title>
+    <link rel="manifest" href="./manifest.webmanifest">
+    <link rel="icon" href="./icon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="./" aria-label="DataTech home">
+        <span class="brand-mark" aria-hidden="true">DT</span>
+        <span>DataTech <span class="brand-light">Metrology Suite</span></span>
+      </a>
+      <div class="header-tools">
+        <label class="unit-control" for="length-unit">
+          <span>Length units</span>
+          <select id="length-unit" aria-label="Length units">
+            <option value="in">Inches (in)</option>
+            <option value="mm">Millimeters (mm)</option>
+          </select>
+        </label>
+        <label class="unit-control" for="temperature-unit">
+          <span>Temperature units</span>
+          <select id="temperature-unit" aria-label="Temperature units">
+            <option value="F">Fahrenheit (°F)</option>
+            <option value="C">Celsius (°C)</option>
+          </select>
+        </label>
+        <span class="offline-label"><span class="status-dot"></span> Works offline</span>
+      </div>
+    </header>
+
+    <main>
+      <section class="intro">
+        <p class="eyebrow">DIMENSIONAL METROLOGY</p>
+        <h1>Thermal compensation</h1>
+        <p class="intro-copy">Correct measured dimensions to a reference temperature and evaluate uncertainty-aware tolerances.</p>
+      </section>
+
+      <nav class="tabs" aria-label="Calculation mode">
+        <button class="tab active" type="button" data-mode="direct" aria-selected="true">Direct measurement</button>
+        <button class="tab" type="button" data-mode="differential" aria-selected="false">Comparator</button>
+      </nav>
+
+      <div class="workspace">
+        <form id="calc-form" novalidate>
+          <section class="form-panel" aria-labelledby="measurement-heading">
+            <div class="section-heading">
+              <span class="step-number">1</span>
+              <div>
+                <h2 id="measurement-heading">Measurement inputs</h2>
+                <p id="measurement-hint">Enter the measured dimension and workpiece conditions.</p>
+              </div>
+            </div>
+
+            <div id="direct-fields" class="field-grid">
+              <label class="field">
+                <span>Measured length <small data-length-unit="length">in</small></span>
+                <input name="measuredLengthMm" type="number" step="any" min="0" value="3.937" required>
+              </label>
+              <label class="field">
+                <span>Workpiece material</span>
+                <select name="directMaterial">
+                  <option value="aluminum">Aluminum</option>
+                  <option value="steel">Steel</option>
+                  <option value="stainless_steel">Stainless steel</option>
+                  <option value="copper">Copper</option>
+                  <option value="brass">Brass</option>
+                  <option value="cast_iron">Cast iron</option>
+                  <option value="titanium">Titanium</option>
+                  <option value="invar">Invar</option>
+                  <option value="custom">Custom CTE</option>
+                </select>
+              </label>
+              <label class="field">
+                <span>Workpiece CTE <small>µm/(m·°C)</small></span>
+                <input name="workpieceCteUmPerMC" type="number" step="any" value="23.1" required>
+              </label>
+              <label class="field">
+                <span>Workpiece temperature <small data-temperature-unit="temperature">°F</small></span>
+                <input name="workpieceTemperatureC" type="number" step="any" value="77" required>
+              </label>
+              <label class="field">
+                <span>Length uncertainty <small data-length-unit="uncertainty">in, 1σ</small></span>
+                <input name="uMeasuredLengthMm" type="number" step="any" min="0" value="0">
+              </label>
+              <label class="field">
+                <span>CTE uncertainty <small>µm/(m·°C), 1σ</small></span>
+                <input name="uWorkpieceCteUmPerMC" type="number" step="any" min="0" value="0">
+              </label>
+              <label class="field">
+                <span>Temperature uncertainty <small data-temperature-unit="temperature">°F, 1σ</small></span>
+                <input name="uWorkpieceTemperatureC" type="number" step="any" min="0" value="0">
+              </label>
+            </div>
+
+            <div id="differential-fields" class="field-grid" hidden>
+              <label class="field">
+                <span>Comparator difference <small data-length-unit="difference">in, part − master</small></span>
+                <input name="comparatorDifferenceMm" type="number" step="any" value="0" required>
+              </label>
+              <label class="field">
+                <span>Master length at reference <small data-length-unit="length">in</small></span>
+                <input name="masterLengthAtReferenceMm" type="number" step="any" min="0" value="3.937" required>
+              </label>
+              <label class="field">
+                <span>Master material</span>
+                <select name="masterMaterial">
+                  <option value="steel">Steel</option>
+                  <option value="aluminum">Aluminum</option>
+                  <option value="stainless_steel">Stainless steel</option>
+                  <option value="copper">Copper</option>
+                  <option value="brass">Brass</option>
+                  <option value="cast_iron">Cast iron</option>
+                  <option value="titanium">Titanium</option>
+                  <option value="invar">Invar</option>
+                  <option value="custom">Custom CTE</option>
+                </select>
+              </label>
+              <label class="field">
+                <span>Master CTE <small>µm/(m·°C)</small></span>
+                <input name="masterCteUmPerMC" type="number" step="any" value="11.5" required>
+              </label>
+              <label class="field">
+                <span>Master temperature <small data-temperature-unit="temperature">°F</small></span>
+                <input name="masterTemperatureC" type="number" step="any" value="68" required>
+              </label>
+              <label class="field">
+                <span>Workpiece material</span>
+                <select name="diffWorkpieceMaterial">
+                  <option value="aluminum">Aluminum</option>
+                  <option value="steel">Steel</option>
+                  <option value="stainless_steel">Stainless steel</option>
+                  <option value="copper">Copper</option>
+                  <option value="brass">Brass</option>
+                  <option value="cast_iron">Cast iron</option>
+                  <option value="titanium">Titanium</option>
+                  <option value="invar">Invar</option>
+                  <option value="custom">Custom CTE</option>
+                </select>
+              </label>
+              <label class="field">
+                <span>Workpiece CTE <small>µm/(m·°C)</small></span>
+                <input name="diffWorkpieceCteUmPerMC" type="number" step="any" value="23.1" required>
+              </label>
+              <label class="field">
+                <span>Workpiece temperature <small data-temperature-unit="temperature">°F</small></span>
+                <input name="diffWorkpieceTemperatureC" type="number" step="any" value="77" required>
+              </label>
+              <label class="field">
+                <span>Comparator uncertainty <small data-length-unit="uncertainty">in, 1σ</small></span>
+                <input name="uComparatorDifferenceMm" type="number" step="any" min="0" value="0">
+              </label>
+              <label class="field">
+                <span>Master length uncertainty <small data-length-unit="uncertainty">in, 1σ</small></span>
+                <input name="uMasterLengthMm" type="number" step="any" min="0" value="0">
+              </label>
+              <label class="field">
+                <span>Master CTE uncertainty <small>µm/(m·°C), 1σ</small></span>
+                <input name="uMasterCteUmPerMC" type="number" step="any" min="0" value="0">
+              </label>
+              <label class="field">
+                <span>Master temperature uncertainty <small data-temperature-unit="temperature">°F, 1σ</small></span>
+                <input name="uMasterTemperatureC" type="number" step="any" min="0" value="0">
+              </label>
+              <label class="field">
+                <span>Workpiece CTE uncertainty <small>µm/(m·°C), 1σ</small></span>
+                <input name="uDiffWorkpieceCteUmPerMC" type="number" step="any" min="0" value="0">
+              </label>
+              <label class="field">
+                <span>Workpiece temperature uncertainty <small data-temperature-unit="temperature">°F, 1σ</small></span>
+                <input name="uDiffWorkpieceTemperatureC" type="number" step="any" min="0" value="0">
+              </label>
+            </div>
+          </section>
+
+          <section class="form-panel">
+            <div class="section-heading">
+              <span class="step-number">2</span>
+              <div>
+                <h2>Reference &amp; tolerance</h2>
+                <p>Set the reference temperature and optional specification limits.</p>
+              </div>
+            </div>
+            <div class="field-grid compact-grid">
+              <label class="field">
+                <span>Reference temperature <small data-temperature-unit="temperature">°F</small></span>
+                <input name="referenceTemperatureC" type="number" step="any" value="68" required>
+              </label>
+              <label class="field">
+                <span>Coverage factor <small>k</small></span>
+                <input name="coverageFactor" type="number" step="any" min="0" value="2" required>
+              </label>
+              <label class="field">
+                <span>Lower specification limit <small data-length-unit="length">in</small></span>
+                <input name="lowerLimitMm" type="number" step="any" placeholder="Optional">
+              </label>
+              <label class="field">
+                <span>Upper specification limit <small data-length-unit="length">in</small></span>
+                <input name="upperLimitMm" type="number" step="any" placeholder="Optional">
+              </label>
+            </div>
+          </section>
+
+          <button class="calculate-button" type="submit">Calculate compensation <span aria-hidden="true">→</span></button>
+          <p class="form-note">Uncertainty inputs are standard uncertainties (1σ). Coverage factor defaults to k = 2.</p>
+        </form>
+
+        <aside class="results-panel" aria-live="polite">
+          <div class="result-header">
+            <div>
+              <p class="eyebrow">CALCULATION RESULT</p>
+              <h2 id="result-title">Ready to calculate</h2>
+            </div>
+            <span class="result-icon" aria-hidden="true">↗</span>
+          </div>
+          <div id="result-body" class="result-body">
+            <p class="empty-state">Enter the measurement inputs and calculate to see the corrected dimension and uncertainty.</p>
+          </div>
+          <div id="error-message" class="error-message" role="alert" hidden></div>
+          <div class="method-note">
+            <strong>Model notes</strong>
+            <p>Linear thermal expansion; independent uncertainty inputs; covariance not included. Confirm material CTE and guard-band policy against your applicable standard.</p>
+          </div>
+        </aside>
+      </div>
+      <footer>DataTech Metrology Suite <span>·</span> <span id="length-unit-footer">Length: in</span> <span>·</span> <span id="temperature-unit-footer">Temperature: °F</span> <span>·</span> CTE: µm/(m·°C)</footer>
+    </main>
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

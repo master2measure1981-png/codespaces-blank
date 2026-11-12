@@ -1,0 +1,63 @@
+{
+  "name": "datatech-thermal-compensation",
+  "version": "1.0.0",
+  "description": "Offline thermal compensation and uncertainty calculator for dimensional metrology.",
+  "private": true,
+  "type": "module",
+  "main": "electron/main.mjs",
+  "scripts": {
+    "start": "node server.js",
+    "desktop": "electron .",
+    "dist:win": "electron-builder --win nsis portable",
+    "test": "node --test"
+  },
+  "build": {
+    "appId": "com.datatech.thermalcompensation",
+    "productName": "DataTech Thermal Compensation",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "app.js",
+      "index.html",
+      "styles.css",
+      "thermal-compensation.js",
+      "units.js",
+      "manifest.webmanifest",
+      "icon.svg",
+      "sw.js",
+      "server.js",
+      "electron/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    }
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "electron": "^45.3.1",
+    "electron-builder": "^26.18.0"
+  }
+}

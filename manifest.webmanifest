@@ -1,0 +1,19 @@
+{
+  "id": "./",
+  "name": "DataTech Thermal Compensation",
+  "short_name": "DataTech Metrology",
+  "description": "Offline thermal compensation and uncertainty calculator for dimensional metrology.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f3f6f8",
+  "theme_color": "#102a43",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
